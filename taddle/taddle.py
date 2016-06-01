@@ -4,8 +4,11 @@ import asyncio
 
 class Taddle(object):
 
-    def __init__(self,email):
+    def __init__(self,email,user,password):
         self.email = email 
+        self.previous_ip = None
+        self.user = user
+        self.password = password
 
 
     @property
@@ -22,6 +25,9 @@ class Taddle(object):
     @asyncio.coroutine
     def watch_ip(self):
         print("current ip: {}".format(self.ip))
+        if self.ip != self.previous_ip:
+            self.send_email() 
+        self.previous_ip = self.ip
 
     @asyncio.coroutine
     def watch_nothing(self):
@@ -30,10 +36,34 @@ class Taddle(object):
 
     @asyncio.coroutine
     def watch(self):
-        yield from asyncio.sleep(5)
+        yield from asyncio.sleep(10)
         asyncio.async(self.watch_ip())
         asyncio.async(self.watch_nothing())
         asyncio.async(self.watch())
+
+    def send_email(self):
+        # Import smtplib for the actual sending function
+        import smtplib
+        # Import the email modules we'll need
+        from email.mime.text import MIMEText
+        # Create a text/plain message
+        msg = MIMEText("The IP address for Rapidash is currently:{}".format(self.ip))
+
+        # me == the sender's email address
+        # you == the recipient's email address
+        msg['Subject'] = 'IP update on Rapidash'
+        msg['From'] = 'taddle@linkage.io'
+        msg['To'] = self.email
+
+        # Send the message via our own SMTP server.
+        s = smtplib.SMTP('smtp.gmail.com',587)
+        s.starttls()
+        s.login(
+            self.user,
+            self.password
+        )
+        s.send_message(msg)
+        s.quit() 
 
     def run(self):
         ''' 

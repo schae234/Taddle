@@ -5,6 +5,8 @@ import io
 import os
 import re
 
+from setuptools import setup, find_packages, Extension
+
 def read(*names, **kwargs):
     with io.open(
         os.path.join(os.path.dirname(__file__), *names),
@@ -23,6 +25,10 @@ def find_version(*file_paths):
 setup(
     name='taddle',
     version=find_version('taddle','__init__.py'),
+    packages= find_packages(),
+    scripts = [
+        'taddle/cli/taddle'    
+    ],
     description='Python IP reporter',
     author='Rob Schaefer',
     author_email='rob@linkag.io',
