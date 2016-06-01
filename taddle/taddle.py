@@ -36,7 +36,7 @@ class Taddle(object):
 
     @asyncio.coroutine
     def watch(self):
-        yield from asyncio.sleep(10)
+        yield from asyncio.sleep(300)
         asyncio.async(self.watch_ip())
         asyncio.async(self.watch_nothing())
         asyncio.async(self.watch())
