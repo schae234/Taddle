@@ -22,6 +22,10 @@ class Taddle(object):
             s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]] \
         ) if l][0][0]
 
+    @property
+    def hostname(self):
+        return socket.gethostname()
+
     @asyncio.coroutine
     def watch_ip(self):
         print("current ip: {}".format(self.ip))
@@ -47,11 +51,15 @@ class Taddle(object):
         # Import the email modules we'll need
         from email.mime.text import MIMEText
         # Create a text/plain message
-        msg = MIMEText("The IP address for Rapidash is currently:{}".format(self.ip))
+        msg = MIMEText("The IP address for {} is currently:{}".format(
+            self.hostname,
+            self.ip
+            
+        ))
 
         # me == the sender's email address
         # you == the recipient's email address
-        msg['Subject'] = 'IP update on Rapidash'
+        msg['Subject'] = 'IP update on {}'.format(self.hostname)
         msg['From'] = 'taddle@linkage.io'
         msg['To'] = self.email
 
