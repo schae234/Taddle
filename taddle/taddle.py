@@ -1,15 +1,27 @@
 
 import socket
 import asyncio
+# Import smtplib for the actual sending function
+import smtplib
 
 class Taddle(object):
 
     def __init__(self,email,user,password):
         self.email = email 
         self.previous_ip = None
-        self.user = user
-        self.password = password
+        # create the smtp daemon
+        self.smtp = self.setup_smtp(user,password)
 
+    def setup_smtp(self,user,password):
+        print('Setting up smtp server...',end='')
+        server = smtplib.SMTP('smtp.gmail.com',587)
+        server.starttls()
+        server.login(
+            user,
+            password
+        )
+        print('done')
+        return server 
 
     @property
     def ip(self):
@@ -46,8 +58,6 @@ class Taddle(object):
         asyncio.async(self.watch())
 
     def send_email(self):
-        # Import smtplib for the actual sending function
-        import smtplib
         # Import the email modules we'll need
         from email.mime.text import MIMEText
         # Create a text/plain message
@@ -64,14 +74,8 @@ class Taddle(object):
         msg['To'] = self.email
 
         # Send the message via our own SMTP server.
-        s = smtplib.SMTP('smtp.gmail.com',587)
-        s.starttls()
-        s.login(
-            self.user,
-            self.password
-        )
-        s.send_message(msg)
-        s.quit() 
+        self.smtp.send_message(msg)
+        # self.smtp.quit() 
 
     def run(self):
         ''' 
